@@ -1,0 +1,4 @@
+#zero punctuation
+match = re.match("([^.!?~,]*)[.!?~,]+", tweet[i])
+if match:
+	tweet[i] = match.group(1) + "." #dot in the end will be processed later
