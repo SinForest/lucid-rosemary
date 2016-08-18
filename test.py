@@ -22,24 +22,33 @@ def initialize():
 		"\U0001F1E0-\U0001F1FF"  # flags (iOS)
 		"]+", flags=re.UNICODE)
 
-def divide_tweet(tweet):
+def divide_tweet(status):
+	tweet = status["text"]
 	#clear from RT annotations
 	match = re.match("RT @[A-Za-z_]*: (.*)", tweet)
 	if match:
 		tweet = match.group(1)
-	tweet = tweet.split()
+	#TODO: URL-Killing via API
+	try:
+		urls = status["entities"]["urls"]
+	except:
+		urls = []
+	for url in urls:
+		#print("Orig: " + tweet)
+		crop_url = url["url"]
+		tweet = tweet.replace(crop_url, "")
+		#print("New: " + tweet)
+		
+		#continue here..!
+
+	#TODO: NaturalLanguage Tweet-Tokenize
 
 	#remove hashtags in the end and # from other hashtags
 	#remove emoji
+	return #!!
 	last_words = True
 	for i in reversed(range(0,len(tweet))):
 		emoji_rx.sub("", tweet[i]) #kill emoji
-
-		re.match("(^.)*\.\.\.?(.*)$", tweet[i])  #TODO: ...-Splitting
-
-		if re.match(".*\..+", tweet[i]): #kill URLs and similar stuff
-			tweet.pop(i)
-			continue
 
 		if tweet[i][0] == '#': #word is hashtag
 			if last_words: #hashtag is in the end of tweet
@@ -49,10 +58,6 @@ def divide_tweet(tweet):
 				tweet[i] = tweet[i][1:] #remove '#' from hashtag
 		else:
 			last_words = False
-
-
-
-
 
 	return tweet
 
@@ -91,7 +96,8 @@ def collect_hashtags(input):
 #processing-function for long_search;
 def collect_tweets(input):
 	for status in input["statuses"]:
-		print(status["id_str"] + ": " + status["text"])
+		#print(status["id_str"] + ": " + status["text"])
+		divide_tweet(status) #!! testing divide_tweet()
 
 #--------------QUERYS-----------------------------
 
