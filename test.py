@@ -38,18 +38,14 @@ def divide_tweet(status):
 		crop_url = url["url"]
 		tweet = tweet.replace(crop_url, "")
 		#print("New: " + tweet)
-		
-		#continue here..!
 
-	#TODO: NaturalLanguage Tweet-Tokenize
+	return #!! code below broken
 
 	#remove hashtags in the end and # from other hashtags
 	#remove emoji
-	return #!!
 	last_words = True
 	for i in reversed(range(0,len(tweet))):
 		emoji_rx.sub("", tweet[i]) #kill emoji
-
 		if tweet[i][0] == '#': #word is hashtag
 			if last_words: #hashtag is in the end of tweet
 				tweet.pop(i) #remove hashtag
@@ -58,6 +54,8 @@ def divide_tweet(status):
 				tweet[i] = tweet[i][1:] #remove '#' from hashtag
 		else:
 			last_words = False
+
+	#TODO: NaturalLanguage Tweet-Tokenize
 
 	return tweet
 
@@ -119,12 +117,16 @@ def query_tweets():
 def main():
 	if len(sys.argv) < 2:
 		print("error: no arguments given")
+		print("try 'hashtags' or 'tweets'")
 		exit()
 	initialize()
 	if sys.argv[1] == "hashtags":
 		query_hashtags()
 	elif sys.argv[1] == "tweets":
 		query_tweets()
+	else:
+		print("error: wrong argument")
+		print("try 'hashtags' or 'tweets'")
 
 
 main()
