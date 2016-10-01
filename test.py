@@ -1,6 +1,7 @@
 #!/usr/bin/python3
 
 from twython import Twython
+from nltk.tokenize import TweetTokenizer
 import records
 import sys, re
 
@@ -24,38 +25,41 @@ def initialize():
 
 def divide_tweet(status):
 	tweet = status["text"]
+
 	#clear from RT annotations
 	match = re.match("RT @[A-Za-z_]*: (.*)", tweet)
 	if match:
 		tweet = match.group(1)
-	#TODO: URL-Killing via API
+
+	#URL-Killing via API
 	try:
 		urls = status["entities"]["urls"]
 	except:
 		urls = []
 	for url in urls:
-		#print("Orig: " + tweet)
 		crop_url = url["url"]
 		tweet = tweet.replace(crop_url, "")
-		#print("New: " + tweet)
 
-	return #!! code below broken
-
-	#remove hashtags in the end and # from other hashtags
 	#remove emoji
-	last_words = True
-	for i in reversed(range(0,len(tweet))):
-		emoji_rx.sub("", tweet[i]) #kill emoji
-		if tweet[i][0] == '#': #word is hashtag
-			if last_words: #hashtag is in the end of tweet
-				tweet.pop(i) #remove hashtag
-				continue
-			else:
-				tweet[i] = tweet[i][1:] #remove '#' from hashtag
-		else:
-			last_words = False
+	emoji_rx.sub("", tweet)
 
-	#TODO: NaturalLanguage Tweet-Tokenize
+	#NaturalLanguage Tweet-Tokenize
+	tokenizer = TweetTokenizer()
+	tokens = tokenizer.tokenize(tweet)
+
+	#remove hashtags in the end
+	for i in reversed(range(0,len(tokens))):
+		if tokens[i][0] == '#': #word is hashtag
+			tokens.pop(i) #remove hashtag
+		else:
+			break
+
+	#remove '#' from remaining hashtags
+	for word in tokens:
+		if word[0] == '#':
+			word = word[1:]
+
+	tweet = " ".join(tokens)
 
 	return tweet
 
